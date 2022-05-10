@@ -16,6 +16,8 @@ const Home = () => {
     return <h1>loading</h1>;
   }
 
+  console.table(data?.getPosts);
+
   return (
     <Grid columns={width < 500 ? 1 : width < 1000 ? 2 : 3}>
       <Grid.Row className="home-title">

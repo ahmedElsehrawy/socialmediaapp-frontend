@@ -26,7 +26,22 @@ export const FETCH_POSTS_QUERY = gql`
 export const LIKE_POST_MUTATION = gql`
   mutation LikePost($postId: ID!) {
     likePost(postId: $postId) {
+      _id
+      body
       username
+      comments {
+        _id
+        body
+        username
+        createdAt
+      }
+      likes {
+        username
+      }
+      likeCount
+      commentCount
+      user
+      createdAt
     }
   }
 `;

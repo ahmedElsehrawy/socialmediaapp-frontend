@@ -13,9 +13,50 @@ import {
 const PostCard = ({ post }) => {
   const { user } = useContext(AuthContext);
 
-  const [likePostMutation] = useMutation(LIKE_POST_MUTATION);
+  const [likePostMutation] = useMutation(LIKE_POST_MUTATION, {
+    variables: {
+      postId: post._id,
+    },
+    update: (cache, { data }) => {
+      const { getPosts } = cache.readQuery({
+        query: FETCH_POSTS_QUERY,
+      });
+      let newPost = data.likePost;
 
-  const [deletePost, { loading }] = useMutation(DELET_POST_MUTATION);
+      const likedUnlikedPostIndex = getPosts.findIndex(
+        (post) => post._id === newPost._id
+      );
+
+      let newPosts = getPosts.filter((post) => post._id !== newPost._id);
+
+      newPosts.splice(likedUnlikedPostIndex, 0, data.likePost);
+
+      cache.writeQuery({
+        query: FETCH_POSTS_QUERY,
+        data: {
+          getPosts: newPosts,
+        },
+      });
+    },
+  });
+
+  const [deletePost, { loading }] = useMutation(DELET_POST_MUTATION, {
+    variables: {
+      postId: post._id,
+    },
+    update: (cache, { data }) => {
+      const { getPosts } = cache.readQuery({
+        query: FETCH_POSTS_QUERY,
+      });
+
+      cache.writeQuery({
+        query: FETCH_POSTS_QUERY,
+        data: {
+          getPosts: getPosts.filter((item) => item._id !== post._id),
+        },
+      });
+    },
+  });
 
   return (
     <Card fluid>
@@ -27,7 +68,7 @@ const PostCard = ({ post }) => {
         />
         <Card.Header>{post.username}</Card.Header>
         <Card.Meta as={Link} to={`/posts/${post._id}`}>
-          {moment(post.createdAt).fromNow(true)}
+          {moment.utc(post.createdAt).local().fromNow(true)}
         </Card.Meta>
         <Card.Description>{post.body}</Card.Description>
       </Card.Content>
@@ -37,14 +78,7 @@ const PostCard = ({ post }) => {
             size="mini"
             as="div"
             labelPosition="right"
-            onClick={() =>
-              likePostMutation({
-                variables: {
-                  postId: post._id,
-                },
-                refetchQueries: [{ query: FETCH_POSTS_QUERY }],
-              })
-            }
+            onClick={likePostMutation}
           >
             <Button
               color="teal"
@@ -82,14 +116,7 @@ const PostCard = ({ post }) => {
               color="red"
               size="mini"
               loading={loading}
-              onClick={() => {
-                deletePost({
-                  variables: {
-                    postId: post._id,
-                  },
-                  refetchQueries: [{ query: FETCH_POSTS_QUERY }],
-                });
-              }}
+              onClick={deletePost}
             >
               <Icon name="trash" />
             </Button>
