@@ -12,6 +12,10 @@ const MenuBar = () => {
 
   const handleItemClick = (e, { name }) => setActiveItem(name);
 
+  let name = "hello";
+
+  console.log(name);
+
   return (
     <Menu pointing secondary size="massive" color="teal">
       <Menu.Item

@@ -11,10 +11,19 @@ const PostForm = () => {
 
   const [createPost, { loading, error }] = useMutation(CREATE_POST_MUTATION, {
     variables: values,
-    update: (proxy, result) => {
+    update: (cache, { data }) => {
       values.body = "";
+      const { getPosts } = cache.readQuery({
+        query: FETCH_POSTS_QUERY,
+      });
+
+      cache.writeQuery({
+        query: FETCH_POSTS_QUERY,
+        data: {
+          getPosts: [data.createPost, ...getPosts],
+        },
+      });
     },
-    refetchQueries: [{ query: FETCH_POSTS_QUERY }],
   });
 
   function createPostCallback() {
