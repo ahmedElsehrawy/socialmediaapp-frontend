@@ -16,6 +16,8 @@ function App() {
   const [userId, setUserId] = useState(null);
   const [user, setUser] = useState(null);
 
+  console.log("working");
+
   const login = (token, userId, user) => {
     setToken(token);
     setUserId(userId);
