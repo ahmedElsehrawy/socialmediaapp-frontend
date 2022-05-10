@@ -93,7 +93,7 @@ const Post = () => {
                   {data?.getPost?.likeCount}
                 </Label>
               </Button>
-              {user.username === data?.getPost.username && (
+              {user?.username === data?.getPost.username && (
                 <Button
                   color="red"
                   size="mini"
