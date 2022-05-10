@@ -49,8 +49,11 @@ const PostCard = ({ post }) => {
             <Button
               color="teal"
               basic={
-                user?.username &&
-                !post.likes.find((like) => like.username === user?.username)
+                (user?.username &&
+                  !post.likes.find(
+                    (like) => like.username === user?.username
+                  )) ||
+                false
               }
             >
               <Icon name="heart" />
@@ -74,7 +77,7 @@ const PostCard = ({ post }) => {
               {post.commentCount}
             </Label>
           </Button>
-          {user.username === post.username && (
+          {user?.username === post.username && (
             <Button
               color="red"
               size="mini"
