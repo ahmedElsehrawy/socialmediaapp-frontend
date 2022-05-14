@@ -4,7 +4,7 @@ import { Form, Button } from "semantic-ui-react";
 import { useForm } from "../util/hooks";
 import { FETCH_POSTS_QUERY } from "../util/queries";
 
-const PostForm = () => {
+const PostForm = ({ currentPage }) => {
   const { values, onChange, onSubmit } = useForm(createPostCallback, {
     body: "",
   });
@@ -15,12 +15,21 @@ const PostForm = () => {
       values.body = "";
       const { getPosts } = cache.readQuery({
         query: FETCH_POSTS_QUERY,
+        variables: {
+          page: currentPage,
+        },
       });
 
       cache.writeQuery({
         query: FETCH_POSTS_QUERY,
+        variables: {
+          page: currentPage,
+        },
         data: {
-          getPosts: [data.createPost, ...getPosts],
+          getPosts: {
+            count: getPosts.count + 1,
+            nodes: [data.createPost, ...getPosts.nodes],
+          },
         },
       });
     },

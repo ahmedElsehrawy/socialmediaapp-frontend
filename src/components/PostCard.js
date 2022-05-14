@@ -10,7 +10,7 @@ import {
   LIKE_POST_MUTATION,
 } from "../util/queries";
 
-const PostCard = ({ post }) => {
+const PostCard = ({ post, currentPage }) => {
   const { user } = useContext(AuthContext);
 
   const [likePostMutation] = useMutation(LIKE_POST_MUTATION, {
@@ -20,21 +20,30 @@ const PostCard = ({ post }) => {
     update: (cache, { data }) => {
       const { getPosts } = cache.readQuery({
         query: FETCH_POSTS_QUERY,
+        variables: {
+          page: currentPage,
+        },
       });
       let newPost = data.likePost;
 
-      const likedUnlikedPostIndex = getPosts.findIndex(
+      const likedUnlikedPostIndex = getPosts.nodes.findIndex(
         (post) => post._id === newPost._id
       );
 
-      let newPosts = getPosts.filter((post) => post._id !== newPost._id);
+      let newPosts = getPosts.nodes.filter((post) => post._id !== newPost._id);
 
       newPosts.splice(likedUnlikedPostIndex, 0, data.likePost);
 
       cache.writeQuery({
         query: FETCH_POSTS_QUERY,
+        variables: {
+          page: currentPage,
+        },
         data: {
-          getPosts: newPosts,
+          getPosts: {
+            count: getPosts.count,
+            nodes: newPosts,
+          },
         },
       });
     },
@@ -44,15 +53,25 @@ const PostCard = ({ post }) => {
     variables: {
       postId: post._id,
     },
+
     update: (cache, { data }) => {
       const { getPosts } = cache.readQuery({
         query: FETCH_POSTS_QUERY,
+        variables: {
+          page: currentPage,
+        },
       });
 
       cache.writeQuery({
         query: FETCH_POSTS_QUERY,
+        variables: {
+          page: currentPage,
+        },
         data: {
-          getPosts: getPosts.filter((item) => item._id !== post._id),
+          getPosts: {
+            count: getPosts.count - 1,
+            nodes: getPosts.nodes.filter((item) => item._id !== post._id),
+          },
         },
       });
     },
@@ -67,7 +86,14 @@ const PostCard = ({ post }) => {
           src="https://react.semantic-ui.com/images/avatar/large/molly.png"
         />
         <Card.Header>{post.username}</Card.Header>
-        <Card.Meta as={Link} to={`/posts/${post._id}`}>
+        <Card.Meta
+          as={Link}
+          to={
+            currentPage > 0
+              ? `/posts/${post._id}?page=${currentPage + 1}`
+              : `/posts/${post._id}`
+          }
+        >
           {moment.utc(post.createdAt).local().fromNow(true)}
         </Card.Meta>
         <Card.Description>{post.body}</Card.Description>
@@ -100,7 +126,11 @@ const PostCard = ({ post }) => {
           <Button
             size="mini"
             as={Link}
-            to={`/posts/${post._id}`}
+            to={
+              currentPage > 0
+                ? `/posts/${post._id}?page=${currentPage + 1}`
+                : `/posts/${post._id}`
+            }
             labelPosition="right"
             onClick={() => {}}
           >

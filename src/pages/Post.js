@@ -1,6 +1,6 @@
 import { gql, useMutation, useQuery } from "@apollo/client";
-import React, { useContext } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import React, { useContext, useState } from "react";
+import { useNavigate, useParams, useSearchParams } from "react-router-dom";
 import { Button, Form, Icon, Item, Label, Comment } from "semantic-ui-react";
 import { useForm } from "../util/hooks";
 import moment from "moment";
@@ -10,9 +10,13 @@ import {
   LIKE_POST_MUTATION,
 } from "../util/queries";
 import { AuthContext } from "../context/userContext";
+import CustomLoader from "../components/CustomLoader";
 
 const Post = () => {
   const params = useParams();
+  const [searchParams] = useSearchParams();
+  let queryParams = Object.fromEntries([...searchParams]);
+  const [currentPage] = useState(queryParams?.page ? queryParams?.page : 0);
 
   const navigate = useNavigate();
 
@@ -50,9 +54,22 @@ const Post = () => {
 
   const [deletePost, { loading: deleteLoading }] = useMutation(
     DELET_POST_MUTATION,
+
     {
-      update: (proxy, result) => {
-        navigate("/");
+      refetchQueries: [
+        {
+          query: FETCH_POSTS_QUERY,
+          variables: {
+            page: +currentPage - 1,
+          },
+        },
+      ],
+      onCompleted: () => {
+        if (currentPage === 0) {
+          navigate("/");
+        } else {
+          navigate(`/?page=${currentPage}`);
+        }
       },
     }
   );
@@ -62,7 +79,7 @@ const Post = () => {
   }
 
   if (postLoading) {
-    return <div>loading....</div>;
+    return <CustomLoader />;
   }
   return (
     <div className="singlepost">
