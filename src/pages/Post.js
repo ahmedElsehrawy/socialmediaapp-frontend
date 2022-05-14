@@ -93,23 +93,29 @@ const Post = () => {
             <Item.Header as="a">{data?.getPost?.username}</Item.Header>
             <Item.Description>{data?.getPost?.body}</Item.Description>
             <Item.Extra>
-              <Button as="div" labelPosition="right" onClick={likePostMutation}>
+              {user && (
                 <Button
-                  color="teal"
-                  basic={
-                    user?.username &&
-                    !data?.getPost.likes.find(
-                      (like) => like.username === user?.username
-                    )
-                  }
+                  as="div"
+                  labelPosition="right"
+                  onClick={likePostMutation}
                 >
-                  <Icon name="heart" />
-                  Like
+                  <Button
+                    color="teal"
+                    basic={
+                      user?.username &&
+                      !data?.getPost.likes.find(
+                        (like) => like.username === user?.username
+                      )
+                    }
+                  >
+                    <Icon name="heart" />
+                    Like
+                  </Button>
+                  <Label basic color="teal" pointing="left">
+                    {data?.getPost?.likeCount}
+                  </Label>
                 </Button>
-                <Label basic color="teal" pointing="left">
-                  {data?.getPost?.likeCount}
-                </Label>
-              </Button>
+              )}
               {user?.username === data?.getPost.username && (
                 <Button
                   color="red"
@@ -135,21 +141,28 @@ const Post = () => {
           </Item.Content>
         </Item>
       </Item.Group>
-      <Form onSubmit={onSubmit}>
-        <Form.Field>
-          <Form.Input
-            placeholder="Hi World!"
-            name="body"
-            onChange={onChange}
-            value={values.body}
-          />
-          <Button type="submit" color="teal" loading={loading}>
-            comment
-          </Button>
-        </Form.Field>
-      </Form>
+      {user && (
+        <Form onSubmit={onSubmit}>
+          <Form.Field>
+            <Form.Input
+              placeholder="Hi World!"
+              name="body"
+              onChange={onChange}
+              value={values.body}
+            />
+            <Button type="submit" color="teal" loading={loading}>
+              comment
+            </Button>
+          </Form.Field>
+        </Form>
+      )}
       <Comment.Group>
-        <h2 style={{ marginTop: 40 }}>Comments:</h2>
+        {data?.getPost?.comments.length > 0 ? (
+          <h2 style={{ marginTop: 40 }}>Comments:</h2>
+        ) : (
+          <h2 style={{ marginTop: 40, color: "#333" }}>no comments yet</h2>
+        )}
+
         {data?.getPost?.comments?.map((comment) => (
           <Comment key={comment._id}>
             <Comment.Avatar src="https://react.semantic-ui.com/images/avatar/large/molly.png" />

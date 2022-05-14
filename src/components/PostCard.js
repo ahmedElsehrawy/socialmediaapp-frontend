@@ -100,29 +100,31 @@ const PostCard = ({ post, currentPage }) => {
       </Card.Content>
       <Card.Content extra>
         <div className="btns-container">
-          <Button
-            size="mini"
-            as="div"
-            labelPosition="right"
-            onClick={likePostMutation}
-          >
+          {user && (
             <Button
-              color="teal"
-              basic={
-                (user?.username &&
-                  !post.likes.find(
-                    (like) => like.username === user?.username
-                  )) ||
-                false
-              }
+              size="mini"
+              as="div"
+              labelPosition="right"
+              onClick={likePostMutation}
             >
-              <Icon name="heart" />
-              Like
+              <Button
+                color="teal"
+                basic={
+                  (user?.username &&
+                    !post.likes.find(
+                      (like) => like.username === user?.username
+                    )) ||
+                  false
+                }
+              >
+                <Icon name="heart" />
+                Like
+              </Button>
+              <Label basic color="teal" pointing="left">
+                {post.likeCount}
+              </Label>
             </Button>
-            <Label basic color="teal" pointing="left">
-              {post.likeCount}
-            </Label>
-          </Button>
+          )}
           <Button
             size="mini"
             as={Link}

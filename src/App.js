@@ -48,10 +48,10 @@ function App() {
           <MenuBar />
           <Routes>
             <Route exact path="/" element={<Home />} />
+            <Route exact path="/posts/:postId" element={<Post />} />
             {token ? (
               <React.Fragment>
                 <Route exact path="/profile" element={<Profile />} />
-                <Route exact path="/posts/:postId" element={<Post />} />
               </React.Fragment>
             ) : (
               <React.Fragment>
