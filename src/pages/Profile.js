@@ -1,7 +1,7 @@
 import React from "react";
 import { ME } from "../util/queries";
 import { useQuery } from "@apollo/client";
-import { Card, Icon, Image } from "semantic-ui-react";
+import { Card, Image } from "semantic-ui-react";
 import CustomLoader from "../components/CustomLoader";
 import moment from "moment";
 
