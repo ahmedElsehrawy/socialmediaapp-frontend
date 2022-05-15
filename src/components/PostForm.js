@@ -1,10 +1,12 @@
 import { gql, useMutation } from "@apollo/client";
-import React from "react";
+import React, { useContext } from "react";
 import { Form, Button } from "semantic-ui-react";
+import { AuthContext } from "../context/userContext";
 import { useForm } from "../util/hooks";
 import { FETCH_POSTS_QUERY } from "../util/queries";
 
 const PostForm = ({ currentPage }) => {
+  const { logout } = useContext(AuthContext);
   const { values, onChange, onSubmit } = useForm(createPostCallback, {
     body: "",
   });
@@ -32,6 +34,12 @@ const PostForm = ({ currentPage }) => {
           },
         },
       });
+    },
+    onError: (error) => {
+      console.log(error.graphQLErrors[0].message);
+      if (error.graphQLErrors[0].message === "Invalid/Expired token") {
+        logout();
+      }
     },
   });
 

@@ -20,7 +20,7 @@ const Post = () => {
 
   const navigate = useNavigate();
 
-  const { user } = useContext(AuthContext);
+  const { user, logout } = useContext(AuthContext);
 
   const getPostVariables = {
     postId: params.postId,
@@ -44,12 +44,23 @@ const Post = () => {
       values.body = "";
       console.log(result);
     },
+    onError: (error) => {
+      console.log(error.graphQLErrors[0].message);
+      if (error.graphQLErrors[0].message === "Invalid/Expired token") {
+        logout();
+      }
+    },
     refetchQueries: [{ query: FETCH_SINGLE_POST, variables: getPostVariables }],
   });
 
   const [likePostMutation] = useMutation(LIKE_POST_MUTATION, {
     variables: getPostVariables,
     refetchQueries: [{ query: FETCH_SINGLE_POST, variables: getPostVariables }],
+    onError: (error) => {
+      if (error.graphQLErrors[0].message === "Invalid/Expired token") {
+        logout();
+      }
+    },
   });
 
   const [deletePost, { loading: deleteLoading }] = useMutation(
@@ -69,6 +80,12 @@ const Post = () => {
           navigate("/");
         } else {
           navigate(`/?page=${currentPage}`);
+        }
+      },
+      onError: (error) => {
+        console.log(error.graphQLErrors[0].message);
+        if (error.graphQLErrors[0].message === "Invalid/Expired token") {
+          logout();
         }
       },
     }

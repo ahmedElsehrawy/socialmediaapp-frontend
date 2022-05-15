@@ -11,7 +11,7 @@ import {
 } from "../util/queries";
 
 const PostCard = ({ post, currentPage }) => {
-  const { user } = useContext(AuthContext);
+  const { user, logout } = useContext(AuthContext);
 
   const [likePostMutation] = useMutation(LIKE_POST_MUTATION, {
     variables: {
@@ -47,6 +47,11 @@ const PostCard = ({ post, currentPage }) => {
         },
       });
     },
+    onError: (error) => {
+      if (error.graphQLErrors[0].message === "Invalid/Expired token") {
+        logout();
+      }
+    },
   });
 
   const [deletePost, { loading }] = useMutation(DELET_POST_MUTATION, {
@@ -74,6 +79,11 @@ const PostCard = ({ post, currentPage }) => {
           },
         },
       });
+    },
+    onError: (error) => {
+      if (error.graphQLErrors[0].message === "Invalid/Expired token") {
+        logout();
+      }
     },
   });
 
