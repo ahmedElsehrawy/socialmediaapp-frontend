@@ -9,7 +9,7 @@ import {
 import { setContext } from "apollo-link-context";
 
 const httpLink = createHttpLink({
-  uri: "https://elsehrawy-socialmediaapp-backend.onrender.com/",
+  uri: "https://elsehrawy-socialmediaapp-backend2.onrender.com/",
 });
 
 const authLink = setContext(() => {

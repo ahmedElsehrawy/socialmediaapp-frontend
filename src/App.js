@@ -10,29 +10,11 @@ import MenuBar from "./components/MenuBar";
 import { AuthContext } from "./context/userContext";
 import Profile from "./pages/Profile";
 import Post from "./pages/Post";
-import { gql, useQuery } from "@apollo/client";
 
 function App() {
   const [token, setToken] = useState(null);
   const [userId, setUserId] = useState(null);
   const [user, setUser] = useState(null);
-
-  const GETSHOWS = gql`
-    query Query {
-      getShows {
-        _id
-        name
-        date
-        likes
-      }
-    }
-  `;
-
-  const { data } = useQuery(GETSHOWS);
-
-  if (data) {
-    console.log(data);
-  }
 
   const login = (token, userId, user) => {
     setToken(token);
